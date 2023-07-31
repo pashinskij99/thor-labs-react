@@ -1,0 +1,108 @@
+.overlay {
+  overflow: auto;
+  position: fixed;
+  padding: 10vh 0;
+  inset: 0px;
+  background-color: rgba(255, 255, 255, 0.75);
+  display: flex;
+  align-items: center;
+}
+
+.walletModal {
+  position: relative;
+  margin: auto;
+
+  border-radius: 10px;
+  background: #10141f;
+
+  max-width: 400px;
+  width: 100%;
+
+  &__header {
+  }
+  &__body {
+  }
+  &__footer {
+  }
+}
+
+.header {
+  position: relative;
+  padding: 64px 48px 48px 48px;
+  &__title {
+    font-weight: 500;
+    font-size: 24px;
+    line-height: 36px;
+    text-align: center;
+    color: #fff;
+    text-align: center;
+  }
+  &__closeButton {
+    width: 38px;
+    height: 38px;
+    background: #1a1f2e;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 18px;
+    right: 18px;
+
+    svg {
+      fill: #777;
+    }
+  }
+}
+
+.listItem {
+  height: 50px;
+  display: flex;
+  width: 100%;
+  cursor: pointer;
+  overflow: hidden;
+  transition: height 0.3s ease;
+  &:hover {
+    background-color: #1a1f2e;
+  }
+  &_hide {
+    opacity: 0;
+    height: 0;
+  }
+  &_show {
+    opacity: 1;
+    height: 50px;
+  }
+
+  &__innerWrapper {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    text-align: start;
+    padding: 0 24px;
+  }
+  &__leftSide {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  &__image {
+  }
+  &__name {
+  }
+
+  &__rightSide {
+  }
+  &__state {
+  }
+}
+
+.footer {
+  display: flex;
+  justify-content: flex-end;
+  padding: 12px 24px 24px 12px;
+  &__btnMoreWallets {
+    color: #fff;
+  }
+}

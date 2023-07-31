@@ -1,0 +1,129 @@
+.paymentCart {
+  background-color: var(--cart-background);
+  align-self: flex-start;
+  padding: 16px;
+  border-radius: 8px;
+  // header - start
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    margin-bottom: 20px;
+  }
+  &__statusWrapper {
+    display: flex;
+    align-items: center;
+  }
+  &__statusIcon {
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+  }
+  &__status {
+  }
+  &__highlightedWrapper {
+    display: flex;
+    align-items: center;
+    background-color: var(--link-background);
+    padding: 5px 10px;
+    border-radius: 5px;
+  }
+  &__highlightedText {
+    margin-right: 10px;
+    font-size: 14px;
+    color: var(--body-text-color2);
+  }
+  &__highlightedLink {
+    font-weight: 500;
+    font-size: 14px;
+    -webkit-text-decoration-line: underline;
+    text-decoration-line: underline;
+    color: var(--body-text-color2);
+  }
+  // header - end
+
+  // main - start
+  &__main {
+    display: flex;
+    flex-direction: column;
+  }
+  &__mainHeader {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 30px;
+  }
+  &__title {
+    font-size: 20px;
+    margin-bottom: 10px;
+  }
+  :global(.react-numeric-input) {
+    width: 100%;
+    display: block;
+    margin-bottom: 10px;
+    b {
+      display: none !important;
+    }
+  }
+  &__priceInput {
+    background-color: var(--total-price-background);
+    padding: 10px !important;
+    border: none !important;
+    outline: none !important;
+    color: var(--total-price-text-color);
+    border-radius: 0.5rem !important;
+    width: 100%;
+    b {
+      display: none;
+    }
+  }
+  &__price {
+    font-size: 18px;
+    font-weight: 350;
+  }
+  &__message {
+    margin-bottom: 20px;
+  }
+  // main - end
+
+  // footer - start
+  &__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  &__reportLink {
+    display: inline-flex;
+    -webkit-box-align: center;
+    align-items: center;
+    -webkit-box-pack: center;
+    font-size: 13px;
+    font-weight: 400;
+    text-decoration: none;
+    justify-content: center;
+    border-radius: 0.5rem;
+    padding: 6px 10px;
+    text-transform: uppercase;
+    // transition-property: color, background-color, border-color,
+    //   text-decoration-color, fill, stroke;
+    // transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    // transition-duration: 75ms;
+    background: var(--report-link-background);
+    color: var(--report-link-text-color);
+  }
+  &__share {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    gap: 10px;
+  }
+  &__shareText {
+    font-size: 16px;
+    line-height: 1;
+  }
+  &__shareIcon {
+    fill: rgb(247, 108, 27);
+    display: flex;
+  }
+  // footer - end
+}

@@ -1,0 +1,69 @@
+@import '../../styles/responsive';
+
+.home {
+  padding-top: 30px;
+  @include responsive(xl) {
+    padding-top: 10px;
+  }
+
+  @include responsive(sm) {
+    padding-top: 0;
+  }
+
+  &__container {
+    display: grid;
+    grid-template-columns: 1fr 0.5fr;
+    justify-content: space-between;
+    column-gap: 16px;
+    @include responsive(xl) {
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+  }
+}
+
+.rightSide {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.payDescription {
+  display: flex;
+  flex-direction: column;
+  &__description {
+    width: fit-content;
+    font-size: 12px;
+    padding: 5px 7px;
+    color: var(--description-text-color);
+    background-color: var(--description-text-background);
+    border-radius: 8px;
+    margin-bottom: 15px;
+  }
+  &__b {
+  }
+  &__link {
+    color: var(--see-term-color);
+  }
+
+  &__additional {
+    display: flex;
+    align-items: center;
+    column-gap: 10px;
+  }
+  &__additionalAudited {
+    font-size: 14px;
+    background-color: var(--link-background);
+    padding: 5px 10px;
+    border-radius: 5px;
+  }
+  &__additionalAuditedThemeSwitcher {
+    div:global(.react-switch-handle) {
+      div {
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+      }
+    }
+  }
+}
