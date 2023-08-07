@@ -1,10 +1,6 @@
 import { Header } from '../../layout/Header'
 import { Home } from '../../pages/Home'
 import { clusterApiUrl } from '@solana/web3.js'
-import {
-  WalletAdapterNetwork,
-  // WalletError
-} from '@solana/wallet-adapter-base'
 import { useMemo } from 'react'
 import {
   CoinbaseWalletAdapter,
@@ -33,10 +29,19 @@ import {
   WalletProvider,
 } from '@solana/wallet-adapter-react'
 import { ToastContainer } from 'react-toastify'
+import { useSelector } from 'react-redux'
+import { Route, Routes } from 'react-router-dom'
+import { Network } from '../../pages/Network'
 
 export const App = () => {
-  const network = WalletAdapterNetwork.Devnet
-  const endpoint = useMemo(() => clusterApiUrl(network), [network])
+  const network = useSelector((state) => state.network.netWorkValue)
+  const endpoint = useMemo(
+    () =>
+      network === 'mainnet-beta'
+        ? 'https://api.metaplex.solana.com/'
+        : clusterApiUrl(network),
+    [network]
+  )
 
   const wallet = useMemo(
     () => [
@@ -69,7 +74,10 @@ export const App = () => {
         <WalletModalProvider>
           <main>
             <Header />
-            <Home />
+            <Routes>
+              <Route path='/' element={<Home />} />
+              <Route path='/network' element={<Network />} />
+            </Routes>
           </main>
           <ToastContainer
             position='bottom-right'

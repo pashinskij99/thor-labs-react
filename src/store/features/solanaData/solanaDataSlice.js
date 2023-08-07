@@ -1,5 +1,9 @@
 import { createSlice } from '@reduxjs/toolkit'
 
+export const IS_FROM_WHITE_LIST = 'IS_FROM_WHITE_LIST'
+export const IS_NOT_FROM_WHITE_LIST = 'IS_NOT_FROM_WHITE_LIST'
+const IS_NOT_CONNECTED = 'IS_NOT_CONNECTED'
+
 const initialState = {
   myWallet: process.env.REACT_APP_WALLET_TO_TRANSFER,
   defaultPrice: process.env.REACT_APP_PRICE,
@@ -9,6 +13,7 @@ const initialState = {
     priceForSelectedNFT: '',
     USDC: '',
     SOL: '',
+    fromWhiteList: IS_NOT_CONNECTED, // isFromWhiteList | isNotFromWhiteList | isNotConnected
   },
 }
 
@@ -31,6 +36,9 @@ export const solanaDataSlice = createSlice({
     setUserSOL: (state, action) => {
       state.userWallet.SOL = action.payload
     },
+    setIsFromWhiteList: (state, action) => {
+      state.userWallet.fromWhiteList = action.payload
+    },
     clearUserData: (state) => {
       state.userWallet = { wallet: '', price: '', USDC: '', SOL: '' }
     },
@@ -43,6 +51,7 @@ export const {
   setUserUSDC,
   setUserSOL,
   setUserCountSelectNFT,
+  setIsFromWhiteList,
   clearUserData,
 } = solanaDataSlice.actions
 export default solanaDataSlice.reducer

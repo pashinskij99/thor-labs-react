@@ -5,24 +5,25 @@ import { truncateString } from '../../utils/truncateString'
 import {
   CopyIcon,
   DisconnectWalletIcon,
-  USDCIcon,
+  // USDCIcon,
   SOLIcon,
 } from '../../components/Icons'
 import { toast } from 'react-toastify'
 import { useDispatch, useSelector } from 'react-redux'
 import { clearUserData } from '../../store/features/solanaData/solanaDataSlice'
+import { Link, useLocation, useSearchParams } from 'react-router-dom'
 
 function UserPanel() {
-  const { wallet, USDC, SOL } = useSelector(
-    (state) => state.solanaData.userWallet
-  )
+  const {
+    wallet,
+    // USDC,
+    SOL,
+  } = useSelector((state) => state.solanaData.userWallet)
 
   async function copyTextToClipboard(text) {
-    if ('clipboard' in navigator) {
-      return await navigator.clipboard.writeText(text)
-    } else {
-      return document.execCommand('copy', true, text)
-    }
+    return 'clipboard' in navigator
+      ? await navigator.clipboard.writeText(text)
+      : document.execCommand('copy', true, text)
   }
 
   const notify = () => toast.success('The text has been copied!')
@@ -96,18 +97,22 @@ const ButtonDisconnectWallet = () => {
 export const Header = () => {
   const wallet = useWallet()
 
+  let { pathname } = useLocation()
+
   return (
     <div className={styles.header}>
       <div className={clsx('container', styles.header__container)}>
-        <img
-          className={styles.header__logo}
-          src='/images/logo/logo.png'
-          alt='Logo'
-          width={60}
-          height={60}
-        />
+        <Link to='/'>
+          <img
+            className={styles.header__logo}
+            src='/images/logo/logo.png'
+            alt='Logo'
+            width={60}
+            height={60}
+          />
+        </Link>
 
-        {wallet.connected ? <UserPanel /> : null}
+        {wallet.connected && pathname === '/' ? <UserPanel /> : null}
       </div>
     </div>
   )
