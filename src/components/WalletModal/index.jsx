@@ -19,6 +19,7 @@ export const WalletModal = ({
 
   return (
     <Modal
+      ariaHideApp={false}
       overlayClassName={styles.overlay}
       onRequestClose={closeModal}
       isOpen={isOpen}

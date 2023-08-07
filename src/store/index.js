@@ -1,8 +1,8 @@
 import { configureStore } from '@reduxjs/toolkit'
-import priceReducer from './features/price/priceSlice'
+import solanaDataReducer from './features/solanaData/solanaDataSlice'
 
 export const store = configureStore({
   reducer: {
-    price: priceReducer,
+    solanaData: solanaDataReducer,
   },
 })

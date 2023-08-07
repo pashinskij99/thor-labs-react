@@ -37,7 +37,6 @@ import { ToastContainer } from 'react-toastify'
 export const App = () => {
   const network = WalletAdapterNetwork.Devnet
   const endpoint = useMemo(() => clusterApiUrl(network), [network])
-  // console.log(endpoint)
 
   const wallet = useMemo(
     () => [
