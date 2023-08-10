@@ -73,6 +73,9 @@
     color: var(--total-price-text-color);
     border-radius: 0.5rem !important;
     width: 100%;
+    &:disabled {
+      color: var(--total-price-text-color) !important;
+    }
     b {
       display: none;
     }

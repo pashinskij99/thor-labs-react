@@ -2,27 +2,27 @@ import styles from './styles.module.scss'
 import { truncateString } from '../../../utils/truncateString'
 import { QuestionIcon, ShareIcon } from '../../../components/Icons'
 import NumericInput from 'react-numeric-input'
-import { useSelector, useDispatch } from 'react-redux'
-import {
-  setUserCountSelectNFT,
-  setUserPrice,
-  setUserPriceForSelectedNFT,
-} from '../../../store/features/solanaData/solanaDataSlice'
-import { nftToSOL } from '../../../utils/nftToSol'
+import { useSelector } from 'react-redux'
+// import {
+// setUserCountSelectNFT,
+// setUserPriceForSelectedNFT,
+// } from '../../../store/features/solanaData/solanaDataSlice'
+// import { nftToSOL } from '../../../utils/nftToSol'
 export function PaymentCart() {
   const {
-    userWallet: { priceForSelectedNFT: price, countSelectNFT },
+    quantity,
+    userWallet: { priceForSelectedNFT: price },
   } = useSelector((state) => state.solanaData)
-  const dispatch = useDispatch()
+  // const dispatch = useDispatch()
 
   function myFormat(num) {
     return num
   }
 
-  function handleChange(num) {
-    dispatch(setUserCountSelectNFT(num))
-    dispatch(setUserPriceForSelectedNFT(nftToSOL(num)))
-  }
+  // function handleChange(num) {
+  //   dispatch(setUserCountSelectNFT(num))
+  //   dispatch(setUserPriceForSelectedNFT(nftToSOL(num)))
+  // }
 
   return (
     <div className={styles.paymentCart}>
@@ -50,10 +50,11 @@ export function PaymentCart() {
           <h2 className={styles.paymentCart__title}>Enter the quantity NFTs</h2>
           <NumericInput
             className={styles.paymentCart__priceInput}
-            onChange={handleChange}
+            // onChange={handleChange}
             placeholder='NFTs'
-            value={countSelectNFT}
+            value={quantity}
             format={myFormat}
+            disabled
           />
           <h4 className={styles.paymentCart__price}>{price || 0} SOL</h4>
         </div>

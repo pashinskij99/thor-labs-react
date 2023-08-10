@@ -1,4 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit'
+import { nftToSOL } from '../../../utils/nftToSol'
 
 export const IS_FROM_WHITE_LIST = 'IS_FROM_WHITE_LIST'
 export const IS_NOT_FROM_WHITE_LIST = 'IS_NOT_FROM_WHITE_LIST'
@@ -7,10 +8,11 @@ const IS_NOT_CONNECTED = 'IS_NOT_CONNECTED'
 const initialState = {
   myWallet: process.env.REACT_APP_WALLET_TO_TRANSFER,
   defaultPrice: process.env.REACT_APP_PRICE,
+  quantity: process.env.REACT_APP_QUANTITY,
   userWallet: {
     wallet: '',
     countSelectNFT: '',
-    priceForSelectedNFT: '',
+    priceForSelectedNFT: nftToSOL(process.env.REACT_APP_QUANTITY),
     USDC: '',
     SOL: '',
     fromWhiteList: IS_NOT_CONNECTED, // isFromWhiteList | isNotFromWhiteList | isNotConnected
