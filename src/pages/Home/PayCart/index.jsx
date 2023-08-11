@@ -99,13 +99,11 @@ export const PayCart = () => {
       }
 
       for (let i = 0; i < arrayWhiteList.length; i++) {
-        const idWallet = arrayWhiteList[i].split('_')[0]
-        const count = arrayWhiteList[i].split('_')[1]
-        // console.log({ count })
+        const walletInfoFromEnv = arrayWhiteList[i].split('-')
 
-        if (idWallet === walletKey) {
+        if (walletInfoFromEnv[0] === walletKey) {
           isWhiteListData.isWhiteList = IS_FROM_WHITE_LIST
-          isWhiteListData.count = count
+          isWhiteListData.count = walletInfoFromEnv[1]
           break
         }
       }
