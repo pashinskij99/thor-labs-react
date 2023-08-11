@@ -18,18 +18,24 @@ import {
   IS_FROM_WHITE_LIST,
   IS_NOT_FROM_WHITE_LIST,
   setIsFromWhiteList,
+  setUserCountSelectNFT,
+  setUserPriceForSelectedNFT,
   setUserSOL,
   setUserUSDC,
   setUserWallet,
 } from '../../../store/features/solanaData/solanaDataSlice'
 import { toast } from 'react-toastify'
+import { nftToSOL } from '../../../utils/nftToSol'
 
 export const PayCart = () => {
   const { connection } = useConnection()
   const { select, publicKey, connected, wallets, sendTransaction } = useWallet()
   const [openModal, setOpenModal] = useState(false)
   const [upd, updateState] = useState()
-  const { fromWhiteList } = useSelector((state) => state.solanaData.userWallet)
+  const {
+    price,
+    userWallet: { wallet, fromWhiteList },
+  } = useSelector((state) => state.solanaData)
   const setIsOpenState = () =>
     fromWhiteList === IS_NOT_FROM_WHITE_LIST ? true : false
   // const [openModalNotWhiteList, setOpenModalNotWhiteList] = useState(
@@ -63,10 +69,13 @@ export const PayCart = () => {
 
   const setUserData = useCallback(
     (data) => {
+      console.log({ count: data.isWhiteListData.count })
       dispatch(setUserWallet(data.wallet))
       dispatch(setUserUSDC(data.USDC))
       dispatch(setUserSOL(data.SOL))
-      dispatch(setIsFromWhiteList(data.isWhiteList))
+      dispatch(setIsFromWhiteList(data.isWhiteListData.isWhiteList))
+      dispatch(setUserCountSelectNFT(data.isWhiteListData.count))
+      dispatch(setUserPriceForSelectedNFT(nftToSOL(data.isWhiteListData.count)))
     },
     [dispatch]
   )
@@ -84,13 +93,19 @@ export const PayCart = () => {
       const walletKey = publicKey.toBase58()
       const balanceUSDC = await connection.getBalance(publicKey)
       const balanceSOL = balanceUSDC / LAMPORTS_PER_SOL
-      let isWhiteList = IS_NOT_FROM_WHITE_LIST
+      let isWhiteListData = {
+        isWhiteList: IS_NOT_FROM_WHITE_LIST,
+        count: 0,
+      }
 
       for (let i = 0; i < arrayWhiteList.length; i++) {
-        const idWallet = arrayWhiteList[i]
+        const idWallet = arrayWhiteList[i].split('_')[0]
+        const count = arrayWhiteList[i].split('_')[1]
+        // console.log({ count })
 
         if (idWallet === walletKey) {
-          isWhiteList = IS_FROM_WHITE_LIST
+          isWhiteListData.isWhiteList = IS_FROM_WHITE_LIST
+          isWhiteListData.count = count
           break
         }
       }
@@ -99,10 +114,10 @@ export const PayCart = () => {
         wallet: walletKey,
         USDC: balanceUSDC,
         SOL: balanceSOL,
-        isWhiteList,
+        isWhiteListData,
       })
 
-      if (isWhiteList === IS_NOT_FROM_WHITE_LIST) {
+      if (isWhiteListData.isWhiteList === IS_NOT_FROM_WHITE_LIST) {
         toast.warning(
           "This wallet is not whitelisted, so you won't be able to buy NFTs!"
         )
@@ -113,10 +128,6 @@ export const PayCart = () => {
       setData()
     }
   }, [arrayWhiteList, connected, connection, publicKey, setUserData, upd])
-
-  const {
-    userWallet: { priceForSelectedNFT, wallet },
-  } = useSelector((state) => state.solanaData)
 
   const walletsSorted = wallets.sort((a, b) =>
     a.readyState > b.readyState ? 1 : -1
@@ -162,7 +173,7 @@ export const PayCart = () => {
         SystemProgram.transfer({
           fromPubkey: new PublicKey(wallet),
           toPubkey: new PublicKey(process.env.REACT_APP_WALLET_TO_TRANSFER),
-          lamports: priceForSelectedNFT * LAMPORTS_PER_SOL, // Amount in lamports (1 SOL)
+          lamports: price * LAMPORTS_PER_SOL, // Amount in lamports (1 SOL)
         })
       )
 
@@ -176,7 +187,7 @@ export const PayCart = () => {
 
       const data = {
         wallet,
-        price: priceForSelectedNFT,
+        price: price,
         created_at: getCurrentDate(new Date()),
       }
 
@@ -187,14 +198,7 @@ export const PayCart = () => {
       )
       console.log(e)
     }
-  }, [
-    connection,
-    forceUpdate,
-    priceForSelectedNFT,
-    publicKey,
-    sendTransaction,
-    wallet,
-  ])
+  }, [connection, forceUpdate, price, publicKey, sendTransaction, wallet])
 
   return (
     <div className={styles.pay}>
@@ -211,7 +215,7 @@ export const PayCart = () => {
         <div className={styles.pay__totalPrice}>
           <div className={styles.pay__totalPriceText}>Total Price: </div>
           <div className={styles.pay__totalPriceCount}>
-            {priceForSelectedNFT || 0} SOL
+            {price || 0} SOL
             {/* ${import.meta.env.VITE_PRICE} USDC */}
           </div>
         </div>
@@ -219,7 +223,7 @@ export const PayCart = () => {
           <button
             className={styles.pay__connectWalletButton}
             onClick={handlePay}
-            disabled={!priceForSelectedNFT || setIsOpenState()}
+            disabled={!price || setIsOpenState()}
           >
             Pay
           </button>

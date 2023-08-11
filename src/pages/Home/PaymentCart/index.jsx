@@ -3,16 +3,14 @@ import { truncateString } from '../../../utils/truncateString'
 import { QuestionIcon, ShareIcon } from '../../../components/Icons'
 import NumericInput from 'react-numeric-input'
 import { useSelector } from 'react-redux'
+import { useEffect } from 'react'
 // import {
 // setUserCountSelectNFT,
 // setUserPriceForSelectedNFT,
 // } from '../../../store/features/solanaData/solanaDataSlice'
 // import { nftToSOL } from '../../../utils/nftToSol'
 export function PaymentCart() {
-  const {
-    quantity,
-    userWallet: { priceForSelectedNFT: price },
-  } = useSelector((state) => state.solanaData)
+  const { quantity, price } = useSelector((state) => state.solanaData)
   // const dispatch = useDispatch()
 
   function myFormat(num) {
