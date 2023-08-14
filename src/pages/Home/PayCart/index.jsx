@@ -37,8 +37,8 @@ export const PayCart = () => {
   const setIsOpenState = () =>
     fromWhiteList === IS_NOT_FROM_WHITE_LIST ? true : false
 
-  // const deadline = process.env.REACT_APP_WHITELIST_PERIOD
-  const deadline = '14:08:2023 00:00:00'
+  const deadline = process.env.REACT_APP_WHITELIST_PERIOD
+  // const deadline = '14:08:2023 00:00:00'
 
   const getTime = useCallback(() => {
     const splitDate = deadline.split(' ')
