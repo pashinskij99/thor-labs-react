@@ -3,10 +3,7 @@ import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { QRCodeIcon, SOLIcon } from '../../../components/Icons'
 import { useDispatch, useSelector } from 'react-redux'
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import {
-  WalletModal,
-  WalletModalNotWhiteList,
-} from '../../../components/WalletModal'
+import { WalletModal } from '../../../components/WalletModal'
 import { WalletNotConnectedError } from '@solana/wallet-adapter-base'
 import {
   LAMPORTS_PER_SOL,
@@ -32,15 +29,43 @@ export const PayCart = () => {
   const { select, publicKey, connected, wallets, sendTransaction } = useWallet()
   const [openModal, setOpenModal] = useState(false)
   const [upd, updateState] = useState()
+  const [isTimerFinish, setIsTimerFinish] = useState(true)
   const {
     price,
     userWallet: { wallet, fromWhiteList },
   } = useSelector((state) => state.solanaData)
   const setIsOpenState = () =>
     fromWhiteList === IS_NOT_FROM_WHITE_LIST ? true : false
-  // const [openModalNotWhiteList, setOpenModalNotWhiteList] = useState(
-  //   setIsOpenState()
-  // )
+
+  // const deadline = process.env.REACT_APP_WHITELIST_PERIOD
+  const deadline = '14:08:2023 00:00:00'
+
+  const getTime = useCallback(() => {
+    const splitDate = deadline.split(' ')
+    const splitYearDate = splitDate[0].split(':')
+    const splitTimeDate = splitDate[1].split(':')
+
+    const countDownDate = new Date(
+      splitYearDate[2],
+      splitYearDate[1] - 1,
+      splitYearDate[0],
+
+      splitTimeDate[0],
+      splitTimeDate[1],
+      splitTimeDate[2]
+    ).getTime()
+
+    const now = new Date().getTime()
+    const timeLeft = countDownDate - now
+
+    setIsTimerFinish(timeLeft < 0)
+  }, [deadline])
+
+  useEffect(() => {
+    const interval = setInterval(() => getTime(deadline), 1000)
+
+    return () => clearInterval(interval)
+  }, [deadline, getTime])
 
   const forceUpdate = useCallback(() => updateState({}), [])
 
@@ -51,14 +76,6 @@ export const PayCart = () => {
   const handleClose = () => {
     setOpenModal(false)
   }
-
-  // const handleCloseModalNotWhiteList = () => {
-  //   setOpenModalNotWhiteList(false)
-  // }
-
-  // const handleOpenModalNotWhiteList = () => {
-  //   setOpenModalNotWhiteList(true)
-  // }
 
   const handleWalletClick = (name) => {
     select(name)
@@ -208,7 +225,6 @@ export const PayCart = () => {
           {/* <button onClick={handleOpen}>Open modal</button> */}
         </div>
       </div>
-
       <div className={styles.pay__body}>
         <div className={styles.pay__totalPrice}>
           <div className={styles.pay__totalPriceText}>Total Price: </div>
@@ -221,7 +237,7 @@ export const PayCart = () => {
           <button
             className={styles.pay__connectWalletButton}
             onClick={handlePay}
-            disabled={!price || setIsOpenState()}
+            disabled={isTimerFinish || !price || setIsOpenState()}
           >
             Pay
           </button>
@@ -240,12 +256,7 @@ export const PayCart = () => {
           isOpen={openModal}
           wallets={walletsSorted}
         />
-        {/* <WalletModalNotWhiteList
-          isOpen={openModalNotWhiteList}
-          closeModal={handleCloseModalNotWhiteList}
-        /> */}
       </div>
-
       <div className={styles.pay__footer}>
         <div className={styles.pay__withQR}>
           <div className={styles.pay__withQRText}>Pay with QR</div>
