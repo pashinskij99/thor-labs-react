@@ -23,13 +23,14 @@ import {
 } from '../../../store/features/solanaData/solanaDataSlice'
 import { toast } from 'react-toastify'
 import { nftToSOL } from '../../../utils/nftToSol'
+import { setTime } from '../../../store/features/timer/timerSlice'
 
 export const PayCart = () => {
   const { connection } = useConnection()
   const { select, publicKey, connected, wallets, sendTransaction } = useWallet()
   const [openModal, setOpenModal] = useState(false)
   const [upd, updateState] = useState()
-  const [isTimerFinish, setIsTimerFinish] = useState(true)
+  const { isEnd } = useSelector((state) => state.timer)
   const {
     price,
     userWallet: { wallet, fromWhiteList },
@@ -38,7 +39,7 @@ export const PayCart = () => {
     fromWhiteList === IS_NOT_FROM_WHITE_LIST ? true : false
 
   const deadline = process.env.REACT_APP_WHITELIST_PERIOD
-  // const deadline = '14:08:2023 00:00:00'
+  // const deadline = '18:08:2023 00:00:00'
 
   const getTime = useCallback(() => {
     const splitDate = deadline.split(' ')
@@ -58,14 +59,21 @@ export const PayCart = () => {
     const now = new Date().getTime()
     const timeLeft = countDownDate - now
 
-    setIsTimerFinish(timeLeft < 0)
+    const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24))
+    const hours = Math.floor(
+      (timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+    )
+    const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60))
+    const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000)
+
+    dispatch(setTime({ days, hours, minutes, seconds, isEnd: timeLeft < 0 }))
   }, [deadline])
 
-  useEffect(() => {
-    const interval = setInterval(() => getTime(deadline), 1000)
+  // useEffect(() => {
+  //   const interval = setInterval(() => getTime(deadline), 1000)
 
-    return () => clearInterval(interval)
-  }, [deadline, getTime])
+  //   return () => clearInterval(interval)
+  // }, [deadline, getTime])
 
   const forceUpdate = useCallback(() => updateState({}), [])
 
@@ -86,7 +94,6 @@ export const PayCart = () => {
 
   const setUserData = useCallback(
     (data) => {
-      console.log({ count: data.isWhiteListData.count })
       dispatch(setUserWallet(data.wallet))
       dispatch(setUserUSDC(data.USDC))
       dispatch(setUserSOL(data.SOL))
@@ -139,10 +146,24 @@ export const PayCart = () => {
       }
     }
 
+    let interval
     if (connected) {
+      getTime(deadline)
+      interval = setInterval(() => getTime(deadline), 1000)
+
       setData()
     }
-  }, [arrayWhiteList, connected, connection, publicKey, setUserData, upd])
+
+    return () => interval && clearInterval(interval)
+  }, [
+    arrayWhiteList,
+    connected,
+    connection,
+    getTime,
+    publicKey,
+    setUserData,
+    upd,
+  ])
 
   const walletsSorted = wallets.sort((a, b) =>
     a.readyState > b.readyState ? 1 : -1
@@ -237,7 +258,7 @@ export const PayCart = () => {
           <button
             className={styles.pay__connectWalletButton}
             onClick={handlePay}
-            disabled={isTimerFinish || !price || setIsOpenState()}
+            disabled={isEnd || !price || setIsOpenState()}
           >
             Pay
           </button>

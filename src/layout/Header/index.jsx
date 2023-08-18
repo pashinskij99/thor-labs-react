@@ -2,23 +2,24 @@ import clsx from 'clsx'
 import styles from './styles.module.scss'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { truncateString } from '../../utils/truncateString'
-import {
-  CopyIcon,
-  DisconnectWalletIcon,
-  // USDCIcon,
-  SOLIcon,
-} from '../../components/Icons'
+import { CopyIcon, DisconnectWalletIcon, SOLIcon } from '../../components/Icons'
 import { toast } from 'react-toastify'
 import { useDispatch, useSelector } from 'react-redux'
-import { clearUserData } from '../../store/features/solanaData/solanaDataSlice'
-import { Link, useLocation, useSearchParams } from 'react-router-dom'
+import {
+  IS_FROM_WHITE_LIST,
+  clearUserData,
+} from '../../store/features/solanaData/solanaDataSlice'
+import { Link, useLocation } from 'react-router-dom'
+import { addZeroBeforeNum } from '../../utils/addZeroBeforeNum'
 
 function UserPanel() {
-  const {
-    wallet,
-    // USDC,
-    SOL,
-  } = useSelector((state) => state.solanaData.userWallet)
+  const { wallet, SOL, fromWhiteList } = useSelector(
+    (state) => state.solanaData.userWallet
+  )
+
+  const { days, hours, minutes, seconds, isEnd } = useSelector(
+    (state) => state.timer
+  )
 
   async function copyTextToClipboard(text) {
     return 'clipboard' in navigator
@@ -39,38 +40,64 @@ function UserPanel() {
   }
 
   return (
-    <div className={styles.header__userPanel}>
-      {/* <div className={styles.header__userPanelUSDC}>
+    <div className={styles.header__userPanelWrapper}>
+      {fromWhiteList === IS_FROM_WHITE_LIST ? (
+        <div className={styles.header__whiteListTimer}>
+          {isEnd ? (
+            <p>Whitelist End</p>
+          ) : (
+            <>
+              {days ? (
+                <div className={styles.header__whiteListTimerDays}>
+                  <p>Days:</p>
+                  <span>{addZeroBeforeNum(days)}</span>
+                </div>
+              ) : null}
+              <div className={styles.header__whiteListTimerTime}>
+                <p>Time:</p>
+                <span>
+                  {addZeroBeforeNum(hours)}:{addZeroBeforeNum(minutes)}:
+                  {addZeroBeforeNum(seconds)}
+                </span>
+              </div>
+            </>
+          )}
+        </div>
+      ) : null}
+      <div className={styles.header__userPanel}>
+        {/* <div className={styles.header__userPanelUSDC}>
         <div className={styles.header__userPanelUSDCText}>
           <p className={styles.header__userPanelUSDCCount}>${USDC}</p>
           <p className={styles.header__userPanelUSDCDesc}>USDC</p>
         </div>
         <USDCIcon className={styles.header__userPanelUSDCIcon} />
       </div> */}
-      <div className={styles.header__userPanelSOL}>
-        <div className={styles.header__userPanelSOLText}>
-          <p className={styles.header__userPanelSOLCount}>{SOL}</p>
-          <p className={styles.header__userPanelSOLDesc}>SOL</p>
-        </div>
-        <SOLIcon className={styles.header__userPanelSOLIcon} />
-      </div>
 
-      <div className={styles.header__userPanelInfo}>
-        <div className={styles.header__userPanelInfoId}>
-          {truncateString(wallet, 6, 3)}
-          <button
-            onClick={() => handleCopyClick(wallet)}
-            className={styles.header__userPanelInfoIdCopy}
-          >
-            <CopyIcon />
-          </button>
+        <div className={styles.header__userPanelSOL}>
+          <div className={styles.header__userPanelSOLText}>
+            <p className={styles.header__userPanelSOLCount}>{SOL}</p>
+            <p className={styles.header__userPanelSOLDesc}>SOL</p>
+          </div>
+          <SOLIcon className={styles.header__userPanelSOLIcon} />
         </div>
-        <div className={styles.header__userPanelInfoStatus}>
-          Connected wallet
-        </div>
-      </div>
 
-      <ButtonDisconnectWallet />
+        <div className={styles.header__userPanelInfo}>
+          <div className={styles.header__userPanelInfoId}>
+            {truncateString(wallet, 6, 3)}
+            <button
+              onClick={() => handleCopyClick(wallet)}
+              className={styles.header__userPanelInfoIdCopy}
+            >
+              <CopyIcon />
+            </button>
+          </div>
+          <div className={styles.header__userPanelInfoStatus}>
+            Connected wallet
+          </div>
+        </div>
+
+        <ButtonDisconnectWallet />
+      </div>
     </div>
   )
 }

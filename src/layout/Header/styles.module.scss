@@ -1,3 +1,5 @@
+@import '../../styles/responsive';
+
 .header {
   padding: 15px 0;
   &__container {
@@ -5,11 +7,40 @@
     justify-content: space-between;
     align-items: center;
   }
+  &__userPanelWrapper {
+    display: flex;
+    gap: 10px;
 
+    @include responsive(xs) {
+      flex-direction: column-reverse;
+      align-items: flex-end;
+    }
+  }
+
+  &__whiteListTimer {
+    display: flex;
+    gap: 10px;
+    background-color: var(--cart-background);
+    border-radius: 8px;
+    padding: 10px;
+    p {
+      font-weight: 700;
+    }
+  }
+  &__whiteListTimerDays,
+  &__whiteListTimerTime {
+    display: flex;
+    display: flex;
+    gap: 4px;
+    span {
+      font-weight: 500;
+    }
+  }
   &__userPanel {
     display: flex;
     align-items: center;
   }
+
   &__userPanelUSDC,
   &__userPanelSOL {
     display: flex;
