@@ -24,6 +24,14 @@
   &__headerIcon {
   }
 
+  &__headerCount {
+    display: flex;
+    gap: 4px;
+    p {
+      font-weight: 600;
+    }
+  }
+
   &__disconnectWalletButton {
     button {
       cursor: pointer;

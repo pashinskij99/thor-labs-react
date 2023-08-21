@@ -3,24 +3,13 @@ import { truncateString } from '../../../utils/truncateString'
 import { QuestionIcon, ShareIcon } from '../../../components/Icons'
 import NumericInput from 'react-numeric-input'
 import { useSelector } from 'react-redux'
-import { useEffect } from 'react'
-// import {
-// setUserCountSelectNFT,
-// setUserPriceForSelectedNFT,
-// } from '../../../store/features/solanaData/solanaDataSlice'
-// import { nftToSOL } from '../../../utils/nftToSol'
+
 export function PaymentCart() {
   const { quantity, price } = useSelector((state) => state.solanaData)
-  // const dispatch = useDispatch()
 
   function myFormat(num) {
     return num
   }
-
-  // function handleChange(num) {
-  //   dispatch(setUserCountSelectNFT(num))
-  //   dispatch(setUserPriceForSelectedNFT(nftToSOL(num)))
-  // }
 
   return (
     <div className={styles.paymentCart}>
@@ -56,15 +45,13 @@ export function PaymentCart() {
           />
           <h4 className={styles.paymentCart__price}>{price || 0} SOL</h4>
         </div>
-
-        {/* <p className={styles.paymentCart__message}>Test</p> */}
       </div>
 
       <div className={styles.paymentCart__footer}>
         <a
           className={styles.paymentCart__reportLink}
           target='_blank'
-          href='https://solscan.io/address/dick3qAa8WbS3DyimJhorzMSMYbJUAy2YHWKHYwwmhE?cluster=mainnet'
+          href={`https://solscan.io/address/${process.env.REACT_APP_WALLET_TO_TRANSFER}`}
           rel='noreferrer'
         >
           REPORT LINK

@@ -33,13 +33,17 @@ export const PayCart = () => {
   const { isEnd } = useSelector((state) => state.timer)
   const {
     price,
+    quantity,
     userWallet: { wallet, fromWhiteList },
   } = useSelector((state) => state.solanaData)
   const setIsOpenState = () =>
     fromWhiteList === IS_NOT_FROM_WHITE_LIST ? true : false
 
+  const total = process.env.REACT_APP_TOTAL
+  // const total = 1000
+  const remaining = process.env.REACT_APP_REMAINING
+  // const remaining = 800
   const deadline = process.env.REACT_APP_WHITELIST_PERIOD
-  // const deadline = '18:08:2023 00:00:00'
 
   const getTime = useCallback(() => {
     const splitDate = deadline.split(' ')
@@ -68,12 +72,6 @@ export const PayCart = () => {
 
     dispatch(setTime({ days, hours, minutes, seconds, isEnd: timeLeft < 0 }))
   }, [deadline])
-
-  // useEffect(() => {
-  //   const interval = setInterval(() => getTime(deadline), 1000)
-
-  //   return () => clearInterval(interval)
-  // }, [deadline, getTime])
 
   const forceUpdate = useCallback(() => updateState({}), [])
 
@@ -187,6 +185,14 @@ export const PayCart = () => {
     return dateTime
   }
 
+  const setDisableForPayButton = () => {
+    if (total === remaining) return true
+    if (isEnd) return true
+    if (!price) return true
+    if (setIsOpenState()) return true
+    return false
+  }
+
   const sendSucessTransactionToBD = async (transactionData) => {
     const apiPost = 'https://thor-labs.adm-devs.com/api/v1/send-data/'
     try {
@@ -241,9 +247,16 @@ export const PayCart = () => {
       <div className={styles.pay__header}>
         <div className={styles.pay__headerTextWrapper}>
           <SOLIcon />
-          <div className={styles.pay__headerText}>Pay with SOL</div>
+          <p className={styles.pay__headerText}>Pay with SOL</p>
 
           {/* <button onClick={handleOpen}>Open modal</button> */}
+        </div>
+
+        <div className={styles.pay__headerCount}>
+          <p>Sold out:</p>
+          <div>
+            <span>{remaining}</span>/<span>{total}</span>
+          </div>
         </div>
       </div>
       <div className={styles.pay__body}>
@@ -258,7 +271,7 @@ export const PayCart = () => {
           <button
             className={styles.pay__connectWalletButton}
             onClick={handlePay}
-            disabled={isEnd || !price || setIsOpenState()}
+            disabled={setDisableForPayButton()}
           >
             Pay
           </button>
