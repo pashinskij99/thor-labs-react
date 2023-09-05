@@ -59,7 +59,6 @@ export const solanaDataSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(fetchGetTotal.fulfilled, (state, action) => {
-      console.log(action.payload)
       state.purchasedNFTs = +action.payload.total_transactions
       state.reserved = +action.payload.total_reserve
     })

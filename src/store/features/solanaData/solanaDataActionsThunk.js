@@ -20,8 +20,6 @@ export const createReserve = createAsyncThunk(
     try {
       const response = await axiosInstanceBase.post('/create-reserve/', data)
 
-      console.log(response.data)
-
       return response.data
     } catch (error) {
       rejectWithValue(error)
@@ -34,8 +32,6 @@ export const sendData = createAsyncThunk(
   async (data, { rejectWithValue }) => {
     try {
       const response = await axiosInstanceBase.post('/send-data/', data)
-
-      console.log(response.data)
 
       return response.data
     } catch (error) {
@@ -50,7 +46,7 @@ export const checkPayment = createAsyncThunk(
     try {
       const response = await axiosInstanceBase.post('/check-payment/', data)
 
-      console.log(response.data)
+      return response.data
     } catch (error) {
       rejectWithValue(error)
     }
