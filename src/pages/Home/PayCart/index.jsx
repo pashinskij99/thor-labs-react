@@ -24,6 +24,12 @@ import {
 import { toast } from 'react-toastify'
 import { nftToSOL } from '../../../utils/nftToSol'
 import { setTime } from '../../../store/features/timer/timerSlice'
+import {
+  checkPayment,
+  createReserve,
+  sendData,
+} from '../../../store/features/solanaData/solanaDataActionsThunk'
+import { getCurrentDateForReserved } from '../../../utils/getCurrentDateForReserved'
 
 export const PayCart = () => {
   const { connection } = useConnection()
@@ -34,15 +40,19 @@ export const PayCart = () => {
   const {
     price,
     quantity,
+    totalNFT,
+    purchasedNFTs,
     userWallet: { wallet, fromWhiteList },
   } = useSelector((state) => state.solanaData)
   const setIsOpenState = () =>
     fromWhiteList === IS_NOT_FROM_WHITE_LIST ? true : false
+  const dispatch = useDispatch()
 
-  const total = process.env.REACT_APP_TOTAL
+  // const total = process.env.REACT_APP_TOTAL
   // const total = 1000
-  const remaining = process.env.REACT_APP_REMAINING
+  // const remaining = process.env.REACT_APP_REMAINING
   // const remaining = 800
+  // const deadline = '22:08:2023 00:00:00'
   const deadline = process.env.REACT_APP_WHITELIST_PERIOD
 
   const getTime = useCallback(() => {
@@ -73,6 +83,22 @@ export const PayCart = () => {
     dispatch(setTime({ days, hours, minutes, seconds, isEnd: timeLeft < 0 }))
   }, [deadline])
 
+  useEffect(() => {
+    if (isEnd) {
+      const formData = new FormData()
+      const obj = {
+        wallet,
+        count: quantity,
+      }
+
+      Object.entries(obj).forEach(([key, value]) => {
+        formData.append(key, value)
+      })
+
+      dispatch(checkPayment(formData))
+    }
+  }, [dispatch, isEnd, quantity, wallet])
+
   const forceUpdate = useCallback(() => updateState({}), [])
 
   const handleOpen = () => {
@@ -87,8 +113,6 @@ export const PayCart = () => {
     select(name)
     handleClose()
   }
-
-  const dispatch = useDispatch()
 
   const setUserData = useCallback(
     (data) => {
@@ -167,49 +191,48 @@ export const PayCart = () => {
     a.readyState > b.readyState ? 1 : -1
   )
 
-  const getCurrentDate = (current) => {
-    let cDate =
-      current.getFullYear() +
-      '.' +
-      (current.getMonth() + 1) +
-      '.' +
-      current.getDate()
-    let cTime =
-      current.getHours() +
-      ':' +
-      current.getMinutes() +
-      ':' +
-      current.getSeconds()
-    let dateTime = cDate + ' ' + cTime
+  // const getCurrentDate = (current) => {
+  //   let cDate =
+  //     current.getFullYear() +
+  //     '.' +
+  //     (current.getMonth() + 1) +
+  //     '.' +
+  //     current.getDate()
+  //   let cTime =
+  //     current.getHours() +
+  //     ':' +
+  //     current.getMinutes() +
+  //     ':' +
+  //     current.getSeconds()
+  //   let dateTime = cDate + ' ' + cTime
 
-    return dateTime
-  }
+  //   return dateTime
+  // }
 
   const setDisableForPayButton = () => {
-    if (total === remaining) return true
+    if (totalNFT === purchasedNFTs) return true
     if (isEnd) return true
     if (!price) return true
     if (setIsOpenState()) return true
     return false
   }
 
-  const sendSucessTransactionToBD = async (transactionData) => {
-    const apiPost = 'https://thor-labs.adm-devs.com/api/v1/send-data/'
-    try {
-      const formData = new FormData()
+  // const sendSucessTransactionToBD = async (transactionData) => {
+  //   const apiPost = 'https://thor-labs.adm-devs.com/api/v1/send-data/'
+  //   try {
+  //     const formData = new FormData()
 
-      for (var key in transactionData) {
-        formData.append(key, transactionData[key])
-      }
+  //     for (var key in transactionData) {
+  //       formData.append(key, transactionData[key])
+  //     }
 
-      await fetch(apiPost, { method: 'POST', body: formData })
-    } catch (error) {
-      toast.error('An error occurred while sending transaction data.')
-    }
-  }
+  //     await fetch(apiPost, { method: 'POST', body: formData })
+  //   } catch (error) {
+  //     toast.error('An error occurred while sending transaction data.')
+  //   }
+  // }
 
-  const handlePay = useCallback(async () => {
-    if (!publicKey) throw new WalletNotConnectedError()
+  const createTransaction = useCallback(async () => {
     try {
       const transaction = new Transaction().add(
         SystemProgram.transfer({
@@ -227,20 +250,63 @@ export const PayCart = () => {
 
       forceUpdate()
 
+      const formData = new FormData()
       const data = {
         wallet,
-        price: price,
-        created_at: getCurrentDate(new Date()),
+        price,
+        created_at: getCurrentDateForReserved(),
+        count: quantity,
       }
 
-      sendSucessTransactionToBD(data)
+      Object.entries(data).forEach(([key, value]) =>
+        formData.append(key, value)
+      )
+
+      dispatch(sendData(formData))
     } catch (e) {
       toast.error(
         'An error occurred during payment. You may not have enough money in your account.'
       )
       console.log(e)
     }
-  }, [connection, forceUpdate, price, publicKey, sendTransaction, wallet])
+  }, [connection, dispatch, price, sendTransaction, wallet])
+
+  const handlePay = useCallback(async () => {
+    if (!publicKey) throw new WalletNotConnectedError()
+
+    const formData = new FormData()
+    const formDataObj = {
+      wallet,
+      price,
+      created_at: getCurrentDateForReserved(),
+      count: quantity,
+      limit: totalNFT - purchasedNFTs,
+    }
+
+    Object.entries(formDataObj).forEach(([key, value]) => {
+      formData.append(key, value)
+    })
+
+    const createReserveData = await dispatch(createReserve(formData))
+
+    if (
+      createReserveData.payload.status >= 200 &&
+      createReserveData.payload.status <= 299
+    ) {
+      createTransaction()
+    } else {
+      toast.error('Something went wrong, please try again later.')
+    }
+  }, [
+    createTransaction,
+    dispatch,
+    price,
+    publicKey,
+    purchasedNFTs,
+    quantity,
+    totalNFT,
+    wallet,
+  ])
 
   return (
     <div className={styles.pay}>
@@ -255,7 +321,7 @@ export const PayCart = () => {
         <div className={styles.pay__headerCount}>
           <p>Sold out:</p>
           <div>
-            <span>{remaining}</span>/<span>{total}</span>
+            <span>{purchasedNFTs}</span>/<span>{totalNFT}</span>
           </div>
         </div>
       </div>

@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit'
-import { nftToSOL } from '../../../utils/nftToSol'
+import { fetchGetTotal } from './solanaDataActionsThunk'
 
 export const IS_FROM_WHITE_LIST = 'IS_FROM_WHITE_LIST'
 export const IS_NOT_FROM_WHITE_LIST = 'IS_NOT_FROM_WHITE_LIST'
@@ -10,6 +10,9 @@ const initialState = {
   defaultPrice: process.env.REACT_APP_PRICE,
   quantity: 0,
   price: 0,
+  totalNFT: process.env.REACT_APP_TOTAL,
+  purchasedNFTs: 0,
+  reserved: 0,
   userWallet: {
     wallet: '',
     USDC: '',
@@ -50,6 +53,16 @@ export const solanaDataSlice = createSlice({
       state.price = 0
       state.quantity = 0
     },
+    setPurchasedNFTs: (state, action) => {
+      state.purchasedNFTs = action.payload
+    },
+  },
+  extraReducers: (builder) => {
+    builder.addCase(fetchGetTotal.fulfilled, (state, action) => {
+      console.log(action.payload)
+      state.purchasedNFTs = +action.payload.total_transactions
+      state.reserved = +action.payload.total_reserve
+    })
   },
 })
 
@@ -61,5 +74,6 @@ export const {
   setUserCountSelectNFT,
   setIsFromWhiteList,
   clearUserData,
+  setPurchasedNFTs,
 } = solanaDataSlice.actions
 export default solanaDataSlice.reducer

@@ -1,7 +1,7 @@
 import { Header } from '../../layout/Header'
 import { Home } from '../../pages/Home'
 import { clusterApiUrl } from '@solana/web3.js'
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import {
   CoinbaseWalletAdapter,
   PhantomWalletAdapter,
@@ -29,9 +29,10 @@ import {
   WalletProvider,
 } from '@solana/wallet-adapter-react'
 import { ToastContainer } from 'react-toastify'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { Route, Routes } from 'react-router-dom'
 import { Network } from '../../pages/Network'
+import { fetchGetTotal } from '../../store/features/solanaData/solanaDataActionsThunk'
 
 export const App = () => {
   const network = useSelector((state) => state.network.netWorkValue)
@@ -67,6 +68,11 @@ export const App = () => {
     ],
     [network]
   )
+
+  const dispatch = useDispatch()
+  useEffect(() => {
+    dispatch(fetchGetTotal())
+  }, [dispatch])
 
   return (
     <ConnectionProvider endpoint={endpoint}>

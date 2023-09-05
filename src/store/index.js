@@ -6,7 +6,6 @@ import timerReducer from './features/timer/timerSlice'
 export const store = configureStore({
   reducer: {
     timer: timerReducer,
-
     solanaData: solanaDataReducer,
     network: networkReducer,
   },
