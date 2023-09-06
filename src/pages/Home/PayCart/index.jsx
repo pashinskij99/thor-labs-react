@@ -30,6 +30,7 @@ import {
   sendData,
 } from '../../../store/features/solanaData/solanaDataActionsThunk'
 import { getCurrentDateForReserved } from '../../../utils/getCurrentDateForReserved'
+import { fetchGetTotal } from '../../../store/features/solanaData/solanaDataActionsThunk'
 
 export const PayCart = () => {
   const { connection } = useConnection()
@@ -191,24 +192,6 @@ export const PayCart = () => {
     a.readyState > b.readyState ? 1 : -1
   )
 
-  // const getCurrentDate = (current) => {
-  //   let cDate =
-  //     current.getFullYear() +
-  //     '.' +
-  //     (current.getMonth() + 1) +
-  //     '.' +
-  //     current.getDate()
-  //   let cTime =
-  //     current.getHours() +
-  //     ':' +
-  //     current.getMinutes() +
-  //     ':' +
-  //     current.getSeconds()
-  //   let dateTime = cDate + ' ' + cTime
-
-  //   return dateTime
-  // }
-
   const setDisableForPayButton = () => {
     if (totalNFT === purchasedNFTs) return true
     if (isEnd) return true
@@ -216,21 +199,6 @@ export const PayCart = () => {
     if (setIsOpenState()) return true
     return false
   }
-
-  // const sendSucessTransactionToBD = async (transactionData) => {
-  //   const apiPost = 'https://thor-labs.adm-devs.com/api/v1/send-data/'
-  //   try {
-  //     const formData = new FormData()
-
-  //     for (var key in transactionData) {
-  //       formData.append(key, transactionData[key])
-  //     }
-
-  //     await fetch(apiPost, { method: 'POST', body: formData })
-  //   } catch (error) {
-  //     toast.error('An error occurred while sending transaction data.')
-  //   }
-  // }
 
   const createTransaction = useCallback(async () => {
     try {
@@ -263,6 +231,8 @@ export const PayCart = () => {
       )
 
       dispatch(sendData(formData))
+
+      dispatch(fetchGetTotal())
     } catch (e) {
       toast.error(
         'An error occurred during payment. You may not have enough money in your account.'
