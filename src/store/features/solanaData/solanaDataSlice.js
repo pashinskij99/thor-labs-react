@@ -9,7 +9,9 @@ const initialState = {
   myWallet: process.env.REACT_APP_WALLET_TO_TRANSFER,
   defaultPrice: process.env.REACT_APP_PRICE,
   quantity: 0,
+  maxQuantity: 0,
   price: 0,
+  visiblePrice: 0,
   totalNFT: process.env.REACT_APP_TOTAL,
   purchasedNFTs: 0,
   reserved: 0,
@@ -28,7 +30,11 @@ export const solanaDataSlice = createSlice({
     setUserPriceForSelectedNFT: (state, action) => {
       state.price = action.payload
     },
+    setUserVisiblePriceForSelectedNFT: (state, action) => {
+      state.visiblePrice = action.payload
+    },
     setUserCountSelectNFT: (state, action) => {
+      state.maxQuantity = action.payload
       state.quantity = action.payload
     },
     setUserWallet: (state, action) => {
@@ -56,6 +62,9 @@ export const solanaDataSlice = createSlice({
     setPurchasedNFTs: (state, action) => {
       state.purchasedNFTs = action.payload
     },
+    setQuantity: (state, action) => {
+      state.quantity = action.payload
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(fetchGetTotal.fulfilled, (state, action) => {
@@ -74,5 +83,7 @@ export const {
   setIsFromWhiteList,
   clearUserData,
   setPurchasedNFTs,
+  setQuantity,
+  setUserVisiblePriceForSelectedNFT,
 } = solanaDataSlice.actions
 export default solanaDataSlice.reducer

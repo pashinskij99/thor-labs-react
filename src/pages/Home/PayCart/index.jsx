@@ -2,7 +2,7 @@ import styles from './styles.module.scss'
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { QRCodeIcon, SOLIcon } from '../../../components/Icons'
 import { useDispatch, useSelector } from 'react-redux'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { WalletModal } from '../../../components/WalletModal'
 import { WalletNotConnectedError } from '@solana/wallet-adapter-base'
 import {
@@ -19,6 +19,7 @@ import {
   setUserPriceForSelectedNFT,
   setUserSOL,
   setUserUSDC,
+  setUserVisiblePriceForSelectedNFT,
   setUserWallet,
 } from '../../../store/features/solanaData/solanaDataSlice'
 import { toast } from 'react-toastify'
@@ -31,6 +32,12 @@ import {
 } from '../../../store/features/solanaData/solanaDataActionsThunk'
 import { getCurrentDateForReserved } from '../../../utils/getCurrentDateForReserved'
 import { fetchGetTotal } from '../../../store/features/solanaData/solanaDataActionsThunk'
+import { getWhiteListFromString } from '../../../utils/getWhiteListFromString'
+import { useMemo } from 'react'
+
+export const arrayWhiteList = getWhiteListFromString(
+  process.env.REACT_APP_WHITELIST
+)
 
 export const PayCart = () => {
   const { connection } = useConnection()
@@ -42,6 +49,7 @@ export const PayCart = () => {
     price,
     quantity,
     totalNFT,
+    defaultPrice,
     purchasedNFTs,
     userWallet: { wallet, fromWhiteList },
   } = useSelector((state) => state.solanaData)
@@ -122,17 +130,8 @@ export const PayCart = () => {
       dispatch(setUserSOL(data.SOL))
       dispatch(setIsFromWhiteList(data.isWhiteListData.isWhiteList))
       dispatch(setUserCountSelectNFT(data.isWhiteListData.count))
-      dispatch(setUserPriceForSelectedNFT(nftToSOL(data.isWhiteListData.count)))
     },
-    [dispatch]
-  )
-
-  const getWhiteListFromString = (string) => {
-    return string.split(' ')
-  }
-  const arrayWhiteList = useMemo(
-    () => getWhiteListFromString(process.env.REACT_APP_WHITELIST),
-    [process.env.REACT_APP_WHITELIST]
+    [dispatch, fromWhiteList]
   )
 
   useEffect(() => {
@@ -151,6 +150,9 @@ export const PayCart = () => {
         if (walletInfoFromEnv[0] === walletKey) {
           isWhiteListData.isWhiteList = IS_FROM_WHITE_LIST
           isWhiteListData.count = walletInfoFromEnv[1]
+          dispatch(
+            setUserPriceForSelectedNFT(walletInfoFromEnv[1] * defaultPrice)
+          )
           break
         }
       }
@@ -178,15 +180,7 @@ export const PayCart = () => {
     }
 
     return () => interval && clearInterval(interval)
-  }, [
-    arrayWhiteList,
-    connected,
-    connection,
-    getTime,
-    publicKey,
-    setUserData,
-    upd,
-  ])
+  }, [connected, connection, publicKey, setUserData, upd])
 
   const walletsSorted = wallets.sort((a, b) =>
     a.readyState > b.readyState ? 1 : -1
@@ -239,7 +233,15 @@ export const PayCart = () => {
       )
       console.log(e)
     }
-  }, [connection, dispatch, price, sendTransaction, wallet])
+  }, [
+    connection,
+    dispatch,
+    forceUpdate,
+    price,
+    quantity,
+    sendTransaction,
+    wallet,
+  ])
 
   const handlePay = useCallback(async () => {
     if (!publicKey) throw new WalletNotConnectedError()
@@ -249,7 +251,7 @@ export const PayCart = () => {
       wallet,
       price,
       created_at: getCurrentDateForReserved(),
-      count: quantity,
+      count: +quantity,
       limit: totalNFT - purchasedNFTs,
     }
 

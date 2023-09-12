@@ -3,13 +3,10 @@ import {
   WalletMultiButton,
 } from '@solana/wallet-adapter-react-ui'
 import { useWallet } from '@solana/wallet-adapter-react'
-// Default styles that can be overridden by your app
 import '@solana/wallet-adapter-react-ui/styles.css'
 
 const WalletContainer = () => {
-  // console.log('connection >>', connection)
   const wallet = useWallet()
-  // console.log('wallet >>', wallet)
   return (
     <div className='container has-background-grey-dark'>
       <div className='row'>

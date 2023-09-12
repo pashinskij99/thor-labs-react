@@ -61,9 +61,9 @@
     width: 100%;
     display: block;
     margin-bottom: 10px;
-    b {
-      display: none !important;
-    }
+    // b {
+    //   display: none !important;
+    // }
   }
   &__priceInput {
     background-color: var(--total-price-background);
@@ -76,9 +76,9 @@
     &:disabled {
       color: var(--total-price-text-color) !important;
     }
-    b {
-      display: none;
-    }
+    // b {
+    //   display: none;
+    // }
   }
   &__price {
     font-size: 18px;
