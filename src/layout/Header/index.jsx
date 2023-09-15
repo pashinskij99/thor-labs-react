@@ -41,29 +41,37 @@ function UserPanel() {
 
   return (
     <div className={styles.header__userPanelWrapper}>
-      {fromWhiteList === IS_FROM_WHITE_LIST ? (
-        <div className={styles.header__whiteListTimer}>
-          {isEnd ? (
-            <p>Whitelist End</p>
-          ) : (
-            <>
-              {days ? (
-                <div className={styles.header__whiteListTimerDays}>
-                  <p>Days:</p>
-                  <span>{addZeroBeforeNum(days)}</span>
-                </div>
-              ) : null}
-              <div className={styles.header__whiteListTimerTime}>
-                <p>Time:</p>
-                <span>
+      {process.env.REACT_APP_IS_WHITELIST === 'true'
+        ? (
+          <>
+            {fromWhiteList === IS_FROM_WHITE_LIST ? (
+              <div className={styles.header__whiteListTimer}>
+                {isEnd ? (
+                  <p>Whitelist End</p>
+                ) : (
+                  <>
+                    {days ? (
+                      <div className={styles.header__whiteListTimerDays}>
+                        <p>Days:</p>
+                        <span>{addZeroBeforeNum(days)}</span>
+                      </div>
+                    ) : null}
+                    <div className={styles.header__whiteListTimerTime}>
+                      <p>Time:</p>
+                      <span>
                   {addZeroBeforeNum(hours)}:{addZeroBeforeNum(minutes)}:
-                  {addZeroBeforeNum(seconds)}
+                        {addZeroBeforeNum(seconds)}
                 </span>
+                    </div>
+                  </>
+                )}
               </div>
-            </>
-          )}
-        </div>
-      ) : null}
+            ) : null}
+          </>
+        )
+        : null
+      }
+
       <div className={styles.header__userPanel}>
         {/* <div className={styles.header__userPanelUSDC}>
         <div className={styles.header__userPanelUSDCText}>

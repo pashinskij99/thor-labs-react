@@ -2,7 +2,7 @@ import { createSlice } from '@reduxjs/toolkit'
 import { WalletAdapterNetwork } from '@solana/wallet-adapter-base'
 
 const initialState = {
-  netWorkValue: WalletAdapterNetwork.Mainnet,
+  netWorkValue: WalletAdapterNetwork.Devnet,
 }
 
 const networkSlice = createSlice({

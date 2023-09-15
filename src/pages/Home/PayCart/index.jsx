@@ -56,12 +56,6 @@ export const PayCart = () => {
   const setIsOpenState = () =>
     fromWhiteList === IS_NOT_FROM_WHITE_LIST ? true : false
   const dispatch = useDispatch()
-
-  // const total = process.env.REACT_APP_TOTAL
-  // const total = 1000
-  // const remaining = process.env.REACT_APP_REMAINING
-  // const remaining = 800
-  // const deadline = '22:08:2023 00:00:00'
   const deadline = process.env.REACT_APP_WHITELIST_PERIOD
 
   const getTime = useCallback(() => {
@@ -171,12 +165,33 @@ export const PayCart = () => {
       }
     }
 
+    const setDataNotWhiteList = async () => {
+      const walletKey = publicKey.toBase58()
+      const balanceUSDC = await connection.getBalance(publicKey)
+      const balanceSOL = balanceUSDC / LAMPORTS_PER_SOL
+      let isWhiteListData = {
+        isWhiteList: IS_NOT_FROM_WHITE_LIST,
+        count: 0,
+      }
+
+      setUserData({
+        wallet: walletKey,
+        USDC: balanceUSDC,
+        SOL: balanceSOL,
+        isWhiteListData,
+      })
+    }
+
     let interval
     if (connected) {
       getTime(deadline)
       interval = setInterval(() => getTime(deadline), 1000)
 
-      setData()
+      if(process.env.REACT_APP_IS_WHITELIST === 'true') {
+        setData()
+      } else {
+        setDataNotWhiteList()
+      }
     }
 
     return () => interval && clearInterval(interval)
@@ -187,10 +202,13 @@ export const PayCart = () => {
   )
 
   const setDisableForPayButton = () => {
-    if (totalNFT === purchasedNFTs) return true
-    if (isEnd) return true
-    if (!price) return true
-    if (setIsOpenState()) return true
+    if(process.env.REACT_APP_IS_WHITELIST === 'true') {
+      if (totalNFT === purchasedNFTs) return true
+      if (isEnd) return true
+      if (!price) return true
+      if (setIsOpenState()) return true
+    }
+
     return false
   }
 

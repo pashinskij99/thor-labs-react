@@ -48,17 +48,17 @@ export function PaymentCart() {
             className={styles.paymentCart__priceInput}
             pattern='[0-9]*'
             placeholder='NFTs'
-            max={maxQuantity}
+            max={process.env.REACT_APP_IS_WHITELIST === 'true' ? maxQuantity : Infinity}
             min={0}
             value={quantity}
             onChange={(num) => {
               dispatch(setQuantity(num))
-              dispatch(setUserPriceForSelectedNFT(+defaultPrice * num))
+              dispatch(setUserPriceForSelectedNFT((+defaultPrice * +num).toFixed(1)))
             }}
             onBlur={(event) => {
               const num = +event.target.value
               dispatch(setQuantity(num))
-              dispatch(setUserPriceForSelectedNFT(+defaultPrice * +num))
+              dispatch(setUserPriceForSelectedNFT((+defaultPrice * +num).toFixed(1)))
             }}
             // format={myFormat}
           />
